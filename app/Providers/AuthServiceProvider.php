@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\User;
+use Firebase\JWT\JWT;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
@@ -25,6 +28,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        $this->app['auth']->viaRequest('jwt', function (Request $request) {
+            $decodedToken = JWT::decode($request->header('Authorization'), env('JWT_SECRET'), [env('JWT_ALGO', 'HS256')]);
+
+            return User::find($decodedToken->sub->id);
+        });
     }
 }

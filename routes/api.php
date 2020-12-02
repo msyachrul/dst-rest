@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['jwt'])->get('/me', function (Request $request) {
+    return auth()->user();
 });
+
+Route::post('/login', 'AuthController@login');
+Route::get('/rented-books', 'RentedBooks');
+Route::apiResource('books', 'BookController');
+Route::apiResource('rents', 'RentController')->except(['update']);
